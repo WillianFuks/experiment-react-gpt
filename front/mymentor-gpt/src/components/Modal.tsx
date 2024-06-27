@@ -14,13 +14,15 @@ const Modal: React.FC<ModalProps> = ({ setIsModalOpen }) => {
   };
 
   const handleOk = () => {
+    localStorage.removeItem('username');
+    localStorage.removeItem('password');
     document.cookie = 'username=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
     document.cookie = 'password=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
     navigate('/');
   };
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+    <div className="z-[90] fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
       <div className="bg-white p-6 rounded shadow-lg w-auto">
         <h2 className="text-lg font-semibold mb-4 text-center">Confirm logout?</h2>
         <div className="flex justify-center space-x-4">

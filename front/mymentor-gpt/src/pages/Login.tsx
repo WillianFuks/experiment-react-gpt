@@ -3,6 +3,9 @@ import { FaCompass } from "react-icons/fa6";
 import { useNavigate, useLocation } from 'react-router-dom';
 import Notification from '../components/Notification';
 
+
+const APIURL = import.meta.env.VITE_API_URL;
+
 function LoginPage() {
 
   const location = useLocation();
@@ -26,7 +29,6 @@ function LoginPage() {
     }
   }, [location.state, location.pathname, navigate]);
 
-  const apiUrl = import.meta.env.VITE_API_URL;
 
   const handleSubmit: FormEventHandler<HTMLFormElement>  = async (e)  => {
     e.preventDefault();
@@ -39,7 +41,7 @@ function LoginPage() {
     const data = {name, password};
 
     try {
-      const response = await fetch(`${apiUrl}/login`, {
+      const response = await fetch(`${APIURL}/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -53,8 +55,10 @@ function LoginPage() {
         setError(errorBody.message || 'Something went wrong');
       } else {
         const result = await response.json();
+        localStorage.setItem('username', name);
+        localStorage.setItem('password', password);
         console.log('Success:', result);
-        navigate('/consult');
+        navigate('/consult/swot');
       }
     } catch (error) {
       console.error('Error:', error);

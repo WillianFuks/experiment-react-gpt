@@ -18,7 +18,7 @@ const Navbar: React.FC = () => {
     <nav className="bg-gray-900 p-4 flex justify-between w-full h-20 items-center">
       {lastSegment && <p className="text-white">{lastSegment.toUpperCase()}</p>}
       <button
-        className="bg-white text-blue-500 px-4 py-2 rounded flex hover:bg-cyan-700 hover:text-white gap-1 items-center"
+        className="ml-auto bg-white text-blue-500 px-4 py-2 rounded flex hover:bg-cyan-700 hover:text-white gap-1 items-center"
         onClick={handleOpenModal}
       >
         <TbLogout size={25}/>

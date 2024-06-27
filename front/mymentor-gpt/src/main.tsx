@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom/client'
 import LoginPage from './pages/Login.tsx'
 import ConsultPage from './pages/Consult.tsx'
 import SwotPage from './pages/Swot.tsx'
-import ProtectedRoute from './pages/ProtectedRoute.tsx'
+import ProtectedRoute from './components/ProtectedRoute.tsx'
 import './index.css'
 import { BrowserRouter as Router, Route, Routes  } from 'react-router-dom';
 

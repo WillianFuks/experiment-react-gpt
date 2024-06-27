@@ -10,20 +10,26 @@ import OpenAI from 'openai';
 import templatePrompt from './prompt.js';
 
 
-dotenv.config();
-
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+
+const mode = process.env.NODE_ENV || 'development';
+const envFile = mode === 'production' ? '.env.production' : '.env';
+dotenv.config({ path: path.resolve(__dirname, envFile) });
 
 const app = express();
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
-app.use(cors({
+
+const corsOptions = {
   origin: process.env.CLIENTURL,
   credentials: true
-}));
+}
+
+app.use(cors(corsOptions));
+app.options('*', cors(corsOptions));
 
 const validUsername = process.env.NAME;
 const validPassword = process.env.PASSWORD;
@@ -75,35 +81,56 @@ app.post('/suggest', checkCookies, async (req, res) => {
     const { sector, about } = req.body;
     const prompt = templatePrompt({sector, about});
 
-    // const response = await openai.chat.completions.create({
-    //   messages: [{ role: 'user', content: prompt}],
-    //   model: 'gpt-3.5-turbo-1106',
-    //   temperature: 1,
-    //   response_format: {"type": "json_object"},
-    // });
+    const response = await openai.chat.completions.create({
+      messages: [{ role: 'user', content: prompt}],
+      model: 'gpt-3.5-turbo-1106',
+      temperature: 1,
+      response_format: {"type": "json_object"},
+    });
 
-    // const json_resp = JSON.parse(response.choices[0].message.content);
-    // console.log('return from openai: ', json_resp);
-    // return res.status(200).json({ suggestions: response.choices[0].message.content });
+    const json_resp = JSON.parse(response.choices[0].message.content);
+    return res.status(200).json(json_resp );
 
-    const mock = {
-      "suggestions": [
-        "Exploring new marketing strategies to reach a wider audience",
-        "Developing innovative products to stay ahead of competitors in the market"
-      ]
-    }
-    return res.status(200).json(mock);
+    // const mock = {
+    //   "suggestions": [
+    //     "Exploring new marketing strategies to reach a wider audience",
+    //     "Developing innovative products to stay ahead of competitors in the market"
+    //   ]
+    // }
+    // return res.status(200).json(mock);
   } catch (error){
     res.status(500).json({ message: error});
   }
 });
 
-const options = {
-  key: fs.readFileSync(path.resolve(__dirname, './certs/server.key')),
-  cert: fs.readFileSync(path.resolve(__dirname, './certs/server.crt'))
-};
+// const options = {
+//   key: fs.readFileSync(path.resolve(__dirname, './certs/server.key')),
+//   cert: fs.readFileSync(path.resolve(__dirname, './certs/server.crt'))
+// };
 
-const PORT = process.env.PORT || 3000;
-https.createServer(options, app).listen(PORT, () => {
-  console.log(`HTTPS Server is running on port ${PORT}`);
+const PORT = process.env.PORT || 8080;
+// const server = https.createServer(options, app)
+// server.listen(PORT, () => {
+//   console.log(`HTTPS Server is running on port ${PORT}`);
+// });
+
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});
+
+
+process.on('SIGINT', () => {
+    console.log('SIGINT received: shutting down gracefully');
+    server.close(() => {
+        console.log('Server closed');
+        process.exit(0);
+    });
+});
+
+process.on('SIGTERM', () => {
+    console.log('SIGTERM received: shutting down gracefully');
+    server.close(() => {
+        console.log('Server closed');
+        process.exit(0);
+    });
 });

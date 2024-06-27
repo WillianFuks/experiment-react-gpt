@@ -3,6 +3,7 @@ import Notification from '../components/Notification';
 import { HiOutlineLightBulb } from "react-icons/hi";
 import { RiDeleteBin5Line } from "react-icons/ri";
 import { FaCheck } from "react-icons/fa";
+import LoadingIcon from '../assets/loading.svg';
 
 
 const APIURL = import.meta.env.VITE_API_URL;
@@ -40,6 +41,7 @@ const InputSuggest: React.FC<{ sector: string, about: string, icon: React.ReactN
   const [text, setText] = useState('');
   const [showNotification, setShowNotification] = useState(false);
   const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleSuggest = (about: string) => async () => {
     if (!sector) {
@@ -47,6 +49,7 @@ const InputSuggest: React.FC<{ sector: string, about: string, icon: React.ReactN
       return
     }
     try {
+      setIsLoading(true);
       const response = await fetch(`${APIURL}/suggest`, {
         method: 'POST',
         headers: {
@@ -59,15 +62,18 @@ const InputSuggest: React.FC<{ sector: string, about: string, icon: React.ReactN
       if (!response.ok) {
         const errorBody = await response.json();
         console.log('errorBody ', errorBody.message);
+        setIsLoading(false);
         setError(errorBody.message || 'Something went wrong');
         setShowNotification(true)
       } else {
+        setIsLoading(false);
         const data = await response.json();
         console.log('Success:', data);
         setData(data['suggestions']);
       }
     } catch (error) {
       console.error('And the Error is:', error);
+      setIsLoading(false);
       setError(JSON.stringify(error) || 'Something went wrong');
       setShowNotification(true)
     }
@@ -111,8 +117,8 @@ const InputSuggest: React.FC<{ sector: string, about: string, icon: React.ReactN
         { data && (
           <div>
             {data.map((suggestion: string, index: number) => (
-              <div className="flex gap-1 items-center mb-1 w-1/2 bg-purple-800 text-white font-semibold border border-gray-300 rounded-lg p-4 shadow-md hover:shadow-xl transform transition-transform duration-300">
-                <p className="mr-auto" key={index}>{suggestion}</p>
+              <div key={index} className="flex gap-1 items-center mb-1 w-1/2 bg-purple-800 text-white font-semibold border border-gray-300 rounded-lg p-4 shadow-md hover:shadow-xl transform transition-transform duration-300">
+                <p className="mr-auto pr-4">{suggestion}</p>
 
                 <Tooltip
                   classes="mr-1"
@@ -147,8 +153,14 @@ const InputSuggest: React.FC<{ sector: string, about: string, icon: React.ReactN
           onClick={handleSuggest(about)}
           className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700 flex gap-1"
         >
-          <HiOutlineLightBulb size={23}/>
-          Suggest
+          {isLoading ? (
+            <img className="w-5 h-5" src={LoadingIcon} />
+          ): (
+            <>
+              <HiOutlineLightBulb size={23}/>
+              Suggest
+            </>
+          )}
         </button>
       </div>
     </div>

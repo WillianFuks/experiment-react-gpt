@@ -5,7 +5,7 @@ import { AiOutlinePartition } from "react-icons/ai";
 
 const Sidebar = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [activeItem, setActiveItem] = useState('');
+  const [activeItem, setActiveItem] = useState('slot');
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
@@ -26,7 +26,7 @@ const Sidebar = () => {
         <FaBars size={24} />
       </button>}
       <div
-        className={`fixed top-0 left-0 sm:static w-64 bg-gray-800 text-white transition-transform transform h-full
+        className={`fixed top-0 left-0 sm:static w-64 bg-gray-800 text-white transition-transform transform h-full min-h-screen
                     ${ isSidebarOpen ? 'translate-x-0' : '-translate-x-full' } sm:translate-x-0`
         }
       >
@@ -43,7 +43,7 @@ const Sidebar = () => {
             <li className={`my-2 py-2 ${activeItem === 'slot' ? 'rounded bg-gray-100 bg-opacity-50' : ''}`}>
               <Link
                 to="/consult/swot"
-                className={`hover:text-blue-300 flex items-center gap-1`}
+                className={`hover:text-blue-300 flex items-center gap-1 pl-2`}
                 onClick={handleMenuItemClick('slot')}
               >
                 <AiOutlinePartition size={20}/>
